@@ -1,0 +1,9 @@
+{
+  "environments": {
+    "development": {
+      "us-east-1": {
+        "ecr": "899991151204.dkr.ecr.us-east-1.amazonaws.com"
+      }
+    }
+  }
+}

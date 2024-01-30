@@ -1,0 +1,94 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: enterprise
+spec:
+  templates:
+    - name: enterprise
+      metadata:
+        labels:
+          io.kompose.service: app
+      container:
+        name: app
+        imagePullPolicy: Always
+        stdin: true
+        tty: true
+        command: ["/bin/bash"]
+        ports:
+          - containerPort: 3001
+          - containerPort: 443
+        env:
+          - name: SSH_AUTH_SOCK
+            value: /ssh-agent
+          - name: MYSQL_HOST
+            value: db
+          - name: MYSQL_USERNAME
+            value: root
+          - name: MYSQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mysql
+                key: mysql-pwd
+          - name: MYSQL_PORT
+            value: "3306"
+          - name: ELS_HOST
+            value: elasticsearch
+          - name: GRAYLOG_PORT
+            value: "443"
+          - name: GRAYLOG_SSL
+            value: "true"
+          - name: GRAYLOG_ENABLED
+            value: "true"
+          - name: GRAYLOG_HOST
+            value: hulk-graylog.coupadev.com
+          - name: GRAYLOG_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: graylog
+                key: graylog-token
+          - name: AWS_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: hulk-aws-key
+                key: hulk-aws-access-key-id
+          - name: AWS_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: hulk-aws-secret
+                key: hulk-aws-secret-access-key
+          - name: BACKUP_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: backup-aws-key
+                key: backup-aws-access-key-id
+          - name: BACKUP_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: backup-aws-secret
+                key: backup-aws-secret-access-key
+          - name: REPORT_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: report-aws-key
+                key: report-aws-access-key-id
+          - name: REPORT_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: report-aws-secret
+                key: report-aws-secret-access-key
+        volumeMounts:
+          - name: redis-configs
+            mountPath: /home/coupa_development/toofan-redis-config
+        resources:
+          limits:
+            ephemeral-storage: "100Mi"
+            memory: "3500Mi"
+            cpu: "1500m"
+          requests:
+            ephemeral-storage: "100Mi"
+            memory: "3500Mi"
+            cpu: "1500m"
+      volumes:
+        - name: redis-configs
+          configMap:
+            name: redis-configs

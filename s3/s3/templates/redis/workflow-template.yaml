@@ -1,0 +1,24 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: redis
+spec:
+  templates:
+    - name: redis
+      metadata:
+        labels:
+          component: redis
+      container:
+        command: ["docker-entrypoint.sh"]
+        args: ["redis-server"]
+        ports:
+          - containerPort: 6379
+        resources:
+          limits:
+            ephemeral-storage: "200Mi"
+            memory: "1000Mi"
+            cpu: "200m"
+          requests:
+            ephemeral-storage: "200Mi"
+            memory: "1000Mi"
+            cpu: "200m"

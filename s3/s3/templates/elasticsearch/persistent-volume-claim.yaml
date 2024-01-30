@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: elasticsearch-data
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: hulk
+  resources:
+    requests:
+      storage: 2000Gi
+  dataSource:
+    name: volumesnapshot-toofan-hulk-dev
+    kind: VolumeSnapshot
+    apiGroup: snapshot.storage.k8s.io

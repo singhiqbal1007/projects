@@ -1,0 +1,29 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  labels:
+    workflows.argoproj.io/archive-strategy: "false"
+spec:
+  serviceAccountName: workflow
+  entrypoint: deploy
+  templates:
+    - name: deploy
+      dag:
+        tasks:
+          - name: redis
+            templateRef:
+              name: redis
+              template: redis
+          - name: mysql
+            templateRef:
+              name: mysql
+              template: mysql
+          - name: elasticsearch
+            templateRef:
+              name: elasticsearch
+              template: elasticsearch
+          - name: delay
+            template: delay
+    - name: delay
+      suspend:
+        duration: "900"

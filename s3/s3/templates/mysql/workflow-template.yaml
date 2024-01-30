@@ -1,0 +1,71 @@
+apiVersion: argoproj.io/v1alpha1
+kind: WorkflowTemplate
+metadata:
+  name: mysql
+spec:
+  templates:
+    - name: mysql
+      metadata:
+        labels:
+          app: db
+      volumes:
+        - name: config
+          configMap:
+            name: mysql-config
+            optional: true
+        - name: data
+          persistentVolumeClaim:
+            claimName: mysql-data
+      container:
+        name: mysql
+        command: ["/docker-entrypoint.sh"]
+        args: ["mysqld"]
+        env:
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mysql
+                key: mysql-pwd
+        ports:
+          - containerPort: 3306
+            name: mysql
+        volumeMounts:
+          - name: config
+            mountPath: /etc/my.cnf.d
+          - name: data
+            mountPath: /var/lib/mysql
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsUser: 0
+        resources:
+          limits:
+            ephemeral-storage: "100Mi"
+            memory: "30000Mi"
+            cpu: "4000m"
+          requests:
+            ephemeral-storage: "100Mi"
+            memory: "30000Mi"
+            cpu: "4000m"
+        readinessProbe:
+          exec:
+            command:
+              - /bin/sh
+              - -ec
+              - set -ex
+              - >-
+                mysql -h127.0.0.1 -uroot -p$MYSQL_ROOT_PASSWORD -e'SELECT 1'
+          initialDelaySeconds: 840
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 10
+        startupProbe: # TODO: this is temporary solution, pod will error out if it took longer than initialDelaySeconds. Look for a better way to do this
+          exec:
+            command:
+              - bin/bash
+              - -c
+              - >-
+                mysql -u root -e "ALTER USER 'root'@'%' IDENTIFIED BY '$MYSQL_ROOT_PASSWORD';"
+          initialDelaySeconds: 830
+          periodSeconds: 30
+          timeoutSeconds: 10
+          failureThreshold: 10

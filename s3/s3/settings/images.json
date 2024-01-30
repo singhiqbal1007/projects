@@ -1,0 +1,36 @@
+{
+  "images": {
+    "mysql": {
+      "repository": "percona",
+      "tags": {
+        "8.0.28": "8.0.28-20",
+        "8.0.32": "8.0.32-24"
+      }
+    },
+    "elasticsearch": {
+      "repository": "elasticsearch",
+      "tags": {
+        "8.3.3": "coupa-8.3.3"
+      }
+    },
+    "redis": {
+      "repository": "redis",
+      "tags": {
+        "3.2.12": "3.2.12-alpine"
+      }
+    },
+    "enterprise": {
+      "repository": "coupa_app",
+      "tags": {
+        "master": "master-ruby3.1.3",
+        "038_release": "038_release-ruby3.1.3",
+        "037_release": "037_release-ruby3.1.3",
+        "036_release": "036_release-ruby3.1.3",
+        "035_release": "035_release-ruby2.7.4",
+        "034_release": "034_release-ruby2.7.4",
+        "033_release": "033_release-ruby2.7.4",
+        "032_release": "032_release-ruby2.7.4"
+      }
+    }
+  }
+}
